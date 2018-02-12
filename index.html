@@ -18,17 +18,24 @@
             </div>
             <main class="mdl-layout__content mdl-color--grey-100">
                 <div class="mdl-grid">
-                      <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+                      <div class="mdl-color--grey-100 mdl-cell mdl-cell--12-col">
                            <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"> 
                                 <div>
                                     <h2 style="color:#37474f;font-weight:500;">ReflectSDR</h2>
                                 </div>
                             </center>
                         </div>
-                          <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+                        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col">
                            <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"> 
                               <div style="color:#37474f">
-                                    <center><h3>Directions</h3>
+                                    <center><h3>Directions</h3></center>
+                                </div>
+                              </div>
+                        </div>
+                        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+                           <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"> 
+                              <div style="color:#37474f">
+                                    <center>
                                     <ol style="width:fit-content;text-align: left">
                                         <li>Plug in RTL-SDR dongle</li>
                                         <li>Click the "Connect" button</li>
@@ -38,19 +45,34 @@
                                 </div>
                               </div>
                         </div>
-                        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+                        <div id="connect" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
                            <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
-                               <button id="connect" class="mdl-button mdl-button--raised mdl-button--accent;" style="background-color:#78909c ;color:white;">Connect</button> 
-                                <div id="info" style="display:none">
+                               <button class="mdl-button mdl-button--raised mdl-button--accent;" style="background-color:#78909c ;color:white;">Connect</button> 
+                            </center>
+                        </div>
+                        <div id="infoheader" style="display:none" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col">
+                           <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
+                                <div style="color:#37474f">
+                                    <center><h3>Device Info</h3></center>
+                                </div> 
+                            </div>
+                        </div>
+                        <div id="info" style="display:none" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+                           <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
                                     <p style="margin-top: 16px;">
                                         Manufacturer ID: <span id="1"></span>    <br> 
                                         Product ID: <span id="2"></span>  <br> 
                                         Product Version: <span id="4"></span>  <br>   
-                                        USB Version: <span id="5"></span>    <br> 
-                                        Device Class: <span id="6"></span>    <br> 
-                                        Device Protocol: <span id="3"></span>  <br> 
+                                        USB Version: <span id="5"></span>    <br>  
+                                        <br>View Developer Console for more information.
                                     </p>  
-                                </div>
+                            </center>
+                        </div>
+                        <div id="error" style="display:none" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+                           <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
+                                    <p style="margin-top: 16px;">
+                                        Error connecting to RTL-SDR. Please ensure that the device is connected and is not in use by any other programs.
+                                    </p>  
                             </center>
                         </div>
                     </div>
@@ -73,15 +95,14 @@
             .then(() => device.claimInterface(0)) // Request exclusive control over interface #2.
             .then(() => device.selectAlternateInterface(0, 0))
             .then(() => {
-
+                document.getElementById("error").style.display = "none";
                 document.getElementById("info").style.display = "block";
-                            document.getElementById("1").innerHTML = device.vendorId;
-                            document.getElementById("2").innerHTML = device.productId;
-                            document.getElementById("3").innerHTML = device.deviceProtocol; 
-                            document.getElementById("4").innerHTML = device.deviceVersionMajor + "." + device.deviceVersionMinor + "." + device.deviceVersionSubminor;
-                            document.getElementById("5").innerHTML = device.usbVersionMajor + "." + device.usbVersionMinor + "." + device.usbVersionSubminor;
-                            document.getElementById("6").innerHTML = device.deviceClass + "." + device.deviceSubclass;
-                            document.getElementById("connect").style.display = "none";
+                document.getElementById("infoheader").style.display = "block";
+                document.getElementById("1").innerHTML = device.vendorId;
+                document.getElementById("2").innerHTML = device.productId;
+                document.getElementById("4").innerHTML = device.deviceVersionMajor + "." + device.deviceVersionMinor + "." + device.deviceVersionSubminor;
+                document.getElementById("5").innerHTML = device.usbVersionMajor + "." + device.usbVersionMinor;
+                document.getElementById("connect").style.display = "none";
 
                         })
             .then(() => device.controlTransferIn({
@@ -101,6 +122,7 @@
              }, 2))
             .then(() => { let SDRStream = device.transferIn(1, 512); 
                         if(SDRStream) { console.log("Stream Started"); }})
+             .catch(error => { document.getElementById("error").style.display = "block"; });
 
             });
     </script>

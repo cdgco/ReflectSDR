@@ -42,7 +42,7 @@
             
        <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
     <p>
-      <button id="connect">Connect</button> <span id="status"></span>
+      <button id="connect">Connect</button>
     </p>
     <div id="info" style="display:none">
     <p>
@@ -143,13 +143,23 @@ navigator.usb.requestDevice({ filters: [{ 'vendorId': 3034, 'productId': 10296 }
                 document.getElementById("connect").style.display = "none";
             
             })
-.then(() => device.transferIn(1, 512))
-.then(result => {
-  console.log('Received: ' + result.data.DataView(0));
-    console.log('Received: ' + result.data.ArrayBuffer(0));
-})
-    
-.then(() => console.log(device.configuration))
+.then(() => device.controlTransferIn({
+        requestType:'standard',recipient:'interface',request: 0,value: 1,index: 0
+ }, 2))
+.then(result => { console.log(result.data); })
+.then(() => device.controlTransferIn({
+        requestType:'standard',recipient:'interface',request: 8,value: 1,index: 0
+ }, 2))
+.then(result => { console.log(result.data); })
+.then(() => device.controlTransferIn({
+        requestType:'standard',recipient:'interface',request: 10,value: 1,index: 0
+ }, 2))
+.then(result => { console.log(result.data); })
+.then(() => device.controlTransferIn({
+        requestType:'standard',recipient:'interface',request: 0,value: 1,index: 0
+ }, 2))
+.then(() => { let SDRStream = device.transferIn(1, 512); 
+            if(SDRStream) { console.log("Stream Started"); }})
 
         });
     </script>

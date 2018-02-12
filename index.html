@@ -105,6 +105,7 @@
                 document.getElementById("connect").style.display = "none";
 
                         })
+            .then(() => console.log(device.configuration))
             .then(() => device.controlTransferIn({
                     requestType:'standard',recipient:'interface',request: 0,value: 1,index: 0
              }, 2))

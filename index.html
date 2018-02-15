@@ -7,7 +7,6 @@
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-PMP47KR');</script>
-        <meta charset="utf-8">
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css">
@@ -66,9 +65,9 @@
                         <div id="info" style="display:none" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
                            <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
                                     <p style="margin-top: 16px;">
-                                        Manufacturer: <span id="vname"></span>    <br> 
+                                        <div id="mdiv">Manufacturer: <span id="vname"></span>    <br> </div>
                                         Manufacturer ID: <span id="1"></span>    <br> 
-                                        Product: <span id="pname"></span>  <br>
+                                        <div id="pdiv">Product: <span id="pname"></span>  <br></div>
                                         Product ID: <span id="2"></span>  <br> 
                                         Product Version: <span id="4"></span>  <br>   
                                         USB Version: <span id="5"></span>    <br>  
@@ -105,11 +104,11 @@
             .then(() => {
                 document.getElementById("error").style.display = "none";
                 document.getElementById("info").style.display = "block";
-                document.getElementById("pname").style.display = "none";
-                document.getElementById("vname").style.display = "none";
+                document.getElementById("pdiv").style.display = "none";
+                document.getElementById("mdiv").style.display = "none";
                 document.getElementById("infoheader").style.display = "block";
-                if (device.productName != '') { document.getElementById("pname").innerHTML = device.productName; document.getElementById("pname").style.display = "block"; }
-                if (device.manufacturerName != '') { document.getElementById("vname").innerHTML = device.manufacturerName; document.getElementById("vname").style.display = "block"; }
+                if (device.productName != '') { document.getElementById("pname").innerHTML = device.productName; document.getElementById("pdiv").style.display = "block"; }
+                if (device.manufacturerName != '') { document.getElementById("vname").innerHTML = device.manufacturerName; document.getElementById("mdiv").style.display = "block"; }
                 document.getElementById("1").innerHTML = device.vendorId;
                 document.getElementById("2").innerHTML = device.productId;
                 document.getElementById("4").innerHTML = device.deviceVersionMajor + "." + device.deviceVersionMinor + "." + device.deviceVersionSubminor;
@@ -136,7 +135,7 @@
              }, 2))
             .then(() => { let SDRStream = device.transferIn(1, 512); // Request data from endpoint #1 with a block size of 512.
                         if(SDRStream) { console.log("Stream Started"); }})
-             .catch(error => { document.getElementById("error").style.display = "block"; });
+             
 
             });
     </script>

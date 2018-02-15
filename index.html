@@ -1,12 +1,13 @@
 <html lang="en">
     <head>
+        <meta charset="utf-8">
+        <title>ReflectSDR</title>
         <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':
         new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],
         j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);
         })(window,document,'script','dataLayer','GTM-PMP47KR');</script>
         <meta charset="utf-8">
-        <title>ReflectSDR</title>
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:regular,bold,italic,thin,light,bolditalic,black,medium&amp;lang=en">
         <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
         <link rel="stylesheet" href="https://code.getmdl.io/1.3.0/material.cyan-light_blue.min.css">
@@ -65,7 +66,9 @@
                         <div id="info" style="display:none" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
                            <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
                                     <p style="margin-top: 16px;">
+                                        Manufacturer: <span id="vname"></span>    <br> 
                                         Manufacturer ID: <span id="1"></span>    <br> 
+                                        Product: <span id="pname"></span>  <br>
                                         Product ID: <span id="2"></span>  <br> 
                                         Product Version: <span id="4"></span>  <br>   
                                         USB Version: <span id="5"></span>    <br>  
@@ -91,28 +94,33 @@
             var device;
 
 
-            navigator.usb.requestDevice({ filters: [{ 'vendorId': 3034, 'productId': 10296 }] })
+            navigator.usb.requestDevice({ filters: [{ 'vendorId': 3034, 'productId': 10296 }] }) // Select RTL-SDR Model 2838
             .then(selectedDevice => {
                device = selectedDevice;
-               return device.open(); // Begin a session.
+               return device.open(); // Connect to device.
              })
-            .then(() => device.selectConfiguration(1)) // Select configuration #1 for the device.
-            .then(() => device.claimInterface(0)) // Request exclusive control over interface #2.
-            .then(() => device.selectAlternateInterface(0, 0))
+            .then(() => device.selectConfiguration(1)) // Select configuration mode #1.
+            .then(() => device.claimInterface(0)) // Request control over interface #0.
+            .then(() => device.selectAlternateInterface(0, 0)) // Select Alernate #0 for interface #0.
             .then(() => {
                 document.getElementById("error").style.display = "none";
                 document.getElementById("info").style.display = "block";
+                document.getElementById("pname").style.display = "none";
+                document.getElementById("vname").style.display = "none";
                 document.getElementById("infoheader").style.display = "block";
+                if (device.productName != '') { document.getElementById("pname").innerHTML = device.productName; document.getElementById("pname").style.display = "block"; }
+                if (device.manufacturerName != '') { document.getElementById("vname").innerHTML = device.manufacturerName; document.getElementById("vname").style.display = "block"; }
                 document.getElementById("1").innerHTML = device.vendorId;
                 document.getElementById("2").innerHTML = device.productId;
                 document.getElementById("4").innerHTML = device.deviceVersionMajor + "." + device.deviceVersionMinor + "." + device.deviceVersionSubminor;
                 document.getElementById("5").innerHTML = device.usbVersionMajor + "." + device.usbVersionMinor;
                 document.getElementById("connect").style.display = "none";
+                
 
                         })
             .then(() => console.log(device.configuration))
             .then(() => device.controlTransferIn({
-                    requestType:'standard',recipient:'interface',request: 0,value: 1,index: 0
+                    requestType:'standard',recipient:'interface',request: 0,value: 1,index: 0 // Request data from interface #0, Channel #1 with a length of 2 and command of 0.
              }, 2))
             .then(result => { console.log(result.data); })
             .then(() => device.controlTransferIn({
@@ -126,7 +134,7 @@
             .then(() => device.controlTransferIn({
                     requestType:'standard',recipient:'interface',request: 0,value: 1,index: 0
              }, 2))
-            .then(() => { let SDRStream = device.transferIn(1, 512); 
+            .then(() => { let SDRStream = device.transferIn(1, 512); // Request data from endpoint #1 with a block size of 512.
                         if(SDRStream) { console.log("Stream Started"); }})
              .catch(error => { document.getElementById("error").style.display = "block"; });
 

@@ -21,25 +21,43 @@
                   <a class="mdl-navigation__link" href=""><i class="mdl-color-text--blue-grey-400 material-icons">home</i>Home</a>
                 </nav>
             </div>
-            <main class="mdl-layout__content mdl-color--grey-100">
+            <main id="notchrome" class="mdl-layout__content mdl-color--grey-100">
                 <div class="mdl-grid">
                       <div class="mdl-color--grey-100 mdl-cell mdl-cell--12-col">
                            <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"> 
                                 <div>
-                                    <h2 style="color:#6a52f2;font-weight:500;">ReflectSDR</h2>
+                                    <h2 style="color:#37474f;font-weight:500;">ReflectSDR</h2>
+                                </div>
+                            </center>
+                        </div>
+                        <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
+                           <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
+                                    <p style="margin-top: 16px;display:inline-flex">
+                                        ReflectSDR is currently only supported on Google Chrome for Windows, Android, Linux or ChromeOS.&nbsp;<a id="supported" href="https://google.com/chrome">Install Google Chrome</a>
+                                    </p>  
+                            </center>
+                        </div>
+                    </div>
+                </main>
+                <main id="chrome" class="mdl-layout__content mdl-color--grey-100">
+                <div class="mdl-grid">
+                      <div class="mdl-color--grey-100 mdl-cell mdl-cell--12-col">
+                           <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"> 
+                                <div>
+                                    <h2 style="color:#37474f;font-weight:500;">ReflectSDR</h2>
                                 </div>
                             </center>
                         </div>
                         <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col">
                            <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"> 
-                              <div style="color:#6a52f2">
+                              <div style="color:#37474f">
                                     <center><h3>Directions</h3></center>
                                 </div>
                               </div>
                         </div>
                         <div class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
                            <div class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop"> 
-                              <div style="color:#6a52f2">
+                              <div style="color:#37474f">
                                     <center>
                                     <ol style="width:fit-content;text-align: left">
                                         <li>Plug in RTL-SDR dongle</li>
@@ -52,7 +70,7 @@
                         </div>
                         <div id="connect" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col mdl-grid">
                            <center class="mdl-cell mdl-cell--12-col mdl-cell--12-col-desktop">
-                               <button class="mdl-button mdl-button--raised mdl-button--accent;" style="background-color:lightgrey;color:#6a52f2;">Connect</button> 
+                               <button class="mdl-button mdl-button--raised mdl-button--accent;" style="background-color:#78909c ;color:white;">Connect</button> 
                             </center>
                         </div>
                         <div id="infoheader" style="display:none" class="mdl-color--white mdl-shadow--2dp mdl-cell mdl-cell--12-col">
@@ -88,11 +106,25 @@
         </div>
     </body>
     <script>
+        var ua = navigator.userAgent.toLowerCase();
+        if(navigator.appVersion.indexOf("Win")!=-1 === true || navigator.appVersion.indexOf("X11")!=-1 === true || navigator.appVersion.indexOf("Linux")!=-1 === true || /\bCrOS\b/.test(navigator.userAgent) === true || ua.indexOf("android") > -1 === true){
+            document.getElementById("supported").style.display = "block";    
+        }
+        else {
+             document.getElementById("supported").style.display = "none";
+        }
+        var isChromium = window.chrome,
+            vendorName = window.navigator.vendor,
+            isOpera = window.navigator.userAgent.indexOf("OPR") > -1,
+            isIEedge = window.navigator.userAgent.indexOf("Edge") > -1;
+        if(isChromium !== null && isChromium !== undefined && vendorName === "Google Inc." && isOpera == false && isIEedge == false) {
+           document.getElementById("notchrome").style.display = "none"; document.getElementById("chrome").style.display = "block";
+        } else { 
+           document.getElementById("chrome").style.display = "none"; document.getElementById("notchrome").style.display = "block";
+        }
         let connectButton = document.querySelector("#connect");
         connectButton.addEventListener('click', async function() {
             var device;
-
-
             navigator.usb.requestDevice({ filters: [{ 'vendorId': 3034, 'productId': 10296 }] }) // Select RTL-SDR Model 2838
             .then(selectedDevice => {
                device = selectedDevice;
@@ -115,7 +147,6 @@
                 document.getElementById("5").innerHTML = device.usbVersionMajor + "." + device.usbVersionMinor;
                 document.getElementById("connect").style.display = "none";
                 
-
                         })
             .then(() => console.log(device.configuration))
             .then(() => device.controlTransferIn({
@@ -136,7 +167,6 @@
             .then(() => { let SDRStream = device.transferIn(1, 512); // Request data from endpoint #1 with a block size of 512.
                         if(SDRStream) { console.log("Stream Started"); }})
              
-
             });
     </script>
 </html>
